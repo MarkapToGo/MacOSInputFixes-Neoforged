@@ -1,0 +1,47 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Client",
+      "presentation": {
+        "group": "Mod Development - macos-input-fixes",
+        "order": 0
+      },
+      "projectName": "macos-input-fixes",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dmacos_input_fixes%%/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
+      ],
+      "cwd": "${workspaceFolder}/run",
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Server",
+      "presentation": {
+        "group": "Mod Development - macos-input-fixes",
+        "order": 1
+      },
+      "projectName": "macos-input-fixes",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dmacos_input_fixes%%/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
+      ],
+      "cwd": "${workspaceFolder}/run",
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

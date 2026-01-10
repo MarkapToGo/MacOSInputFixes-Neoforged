@@ -1,0 +1,30 @@
+modLoader="javafml"
+loaderVersion="4"
+license="BSD-3-Clause"
+issueTrackerURL="https://github.com/hamarb123/MCMacOSInputFixes/issues"
+
+[[mods]]
+modId="macos_input_fixes"
+version="1.0.0"
+displayName="MacOS Input Fixes"
+authors="hamarb123 (Original Fabric Mod), Markap (NeoForge Port)"
+description='''Fixes MC-22882, MC-59810, MC-121772, and MC-122296. Makes scrolling with shift work properly on macOS, left click + control = left click (instead of right click) and more fixes!'''
+logoFile="icon.png"
+displayURL="https://github.com/hamarb123/MCMacOSInputFixes"
+
+[[mixins]]
+config="mixins.macos_input_fixes.json"
+
+[[dependencies.macos_input_fixes]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1,)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.macos_input_fixes]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1,1.22)"
+    ordering="NONE"
+    side="CLIENT"
