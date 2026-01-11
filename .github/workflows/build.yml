@@ -2,11 +2,8 @@ name: Build
 
 on:
   push:
-    branches: [master, main]
-    paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - '.github/ISSUE_TEMPLATE/**'
+    tags:
+      - '*'
   pull_request:
     branches: [master, main]
 
