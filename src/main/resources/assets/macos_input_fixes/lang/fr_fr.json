@@ -1,0 +1,10 @@
+{
+    "options.macos_input_fixes.reverse_scrolling": "Inverser le Défilement",
+    "options.macos_input_fixes.reverse_hotbar_scrolling": "Inverser le Défilement de la Hotbar",
+    "options.macos_input_fixes.trackpad_sensitivity": "Sensibilité du Trackpad",
+    "options.macos_input_fixes.momentum_scrolling": "Défilement Inertiel",
+    "options.macos_input_fixes.smooth_scroll": "Défilement Fluide des Menus",
+    "options.macos_input_fixes.disable_ctrl_click_fix": "Désactiver le Fix Ctrl+Clic",
+    "options.macos_input_fixes.use_command_key": "Utiliser la Touche Command",
+    "options.macos_input_fixes.block_command_q": "Bloquer Command+Q"
+}

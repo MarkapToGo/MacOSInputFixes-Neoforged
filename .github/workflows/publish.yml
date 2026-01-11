@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g. 1.0.0)'
+        description: 'Version to publish (e.g. 2026.01.11-1200)'
         required: true
         type: string
 
@@ -33,13 +33,17 @@ jobs:
         with:
           arguments: build
           
+      - name: List built artifacts
+        run: ls -la build/libs/
+          
       - name: Publish to Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           
-          files: build/libs/!(*-sources).jar
+          files: |
+            build/libs/!(*-sources).jar
           
           name: MacOS Input Fixes ${{ github.event.release.tag_name || inputs.version }}
           version: ${{ github.event.release.tag_name || inputs.version }}
@@ -49,3 +53,7 @@ jobs:
           game-versions: 1.21.1
           
           changelog: ${{ github.event.release.body }}
+          
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail

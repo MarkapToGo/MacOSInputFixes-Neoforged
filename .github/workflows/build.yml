@@ -1,6 +1,14 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master, main]
+    paths-ignore:
+      - '*.md'
+      - 'LICENSE'
+      - '.github/ISSUE_TEMPLATE/**'
+  pull_request:
+    branches: [master, main]
 
 jobs:
   build:
@@ -12,8 +20,6 @@ jobs:
         run: |
           cd src/main/native
           make
-          # The Makefile copies the dylib to ../resources/natives
-          # verify it exists
           ls -l ../resources/natives/macos_input_fixes.dylib
           
       - name: Set up JDK 21
@@ -35,4 +41,3 @@ jobs:
         with:
           name: Mod-Artifacts
           path: build/libs/*.jar
-
