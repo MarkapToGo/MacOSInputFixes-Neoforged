@@ -16,6 +16,7 @@ import com.hamarb123.macos_input_fixes.client.ScrollCallback;
 @Mixin(Minecraft.class)
 public class MinecraftClientMixin {
 
+    @SuppressWarnings("resource") // Minecraft instance is managed by the game, not us
     @Inject(at = @At("TAIL"), method = "onGameLoadFinished")
     private void onGameLoadFinished(CallbackInfo info) {
         MacOSInputFixesMod.LOGGER.info("[MinecraftClientMixin] ========================================");

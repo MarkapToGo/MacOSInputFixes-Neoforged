@@ -72,6 +72,7 @@ public class ModOptions {
         }
     }
 
+    @SuppressWarnings("null") // NeoForge annotation processor false positives
     private static void loadInterface() {
         if (loadedInterface)
             return;
@@ -177,6 +178,7 @@ public class ModOptions {
         }
     }
 
+    @SuppressWarnings("null") // Guava Splitter null safety false positives
     public static void loadOptions() {
         // Locate options file in config directory
         optionsFile = FMLPaths.CONFIGDIR.get().resolve("macos_input_fixes.txt");
