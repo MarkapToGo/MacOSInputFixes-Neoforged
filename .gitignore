@@ -1,0 +1,47 @@
+# Gradle
+.gradle/
+build/
+out/
+bin/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+*.dylib
+
+# This mod specific (don't ignore source native code, but ignore compiled intermediate inputs in src if any)
+# But we DO want to commit the final dylib if usage requires it, 
+# however, standard practice is to build it. 
+# The user's build process seems to build it in src/main/native and copy it to resources.
+# We should probably ignore the compiled dylib in resources if it's strictly a build artifact,
+# BUT for a mod repo, sometimes people commit the dylib so others don't need Xcode.
+# Given the workflow builds it, it's safer to IGNORE it to ensure CI builds it fresh.
+# However, if the user wants to distribute it easily, maybe not.
+# Let's stick to standard practice: Ignore build artifacts.
+src/main/resources/natives/macos_input_fixes.dylib
+src/main/native/macos_input_fixes.dylib
+
+# Run directories
+run/
+run_client/
+run_server/
+logs/
+crash-reports/
+debug/
+
+# Gradle Wrapper (optional, but usually good to keep)
+!gradle/wrapper/gradle-wrapper.jar
