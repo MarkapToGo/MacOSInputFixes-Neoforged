@@ -9,6 +9,7 @@
     "MinecraftDropMixin",
     "MouseInvokerMixin",
     "MouseMixin",
+    "MouseHandlerMixin",
     "PlayerInventoryMixin",
     "KeyboardMixin",
     "HandledScreenMixin",

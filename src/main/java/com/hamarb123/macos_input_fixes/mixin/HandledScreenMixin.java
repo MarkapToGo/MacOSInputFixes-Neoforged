@@ -57,4 +57,21 @@ public class HandledScreenMixin {
             return;
         Common.setInjectHasControlDown(false);
     }
+
+    @Inject(at = @At("HEAD"), method = "keyPressed(III)Z")
+    private void keyPressedHead(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
+        if (!Common.IS_SYSTEM_MAC)
+            return;
+        // Logic for Drop Key (Q) when hovering items
+        Common.setInjectHasControlDown(true);
+        MacOSInputFixesMod.LOGGER.info("[HandledScreenMixin] Enabled injectHasControlDown for keyPressed");
+    }
+
+    @Inject(at = @At("RETURN"), method = "keyPressed(III)Z")
+    private void keyPressedReturn(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
+        if (!Common.IS_SYSTEM_MAC)
+            return;
+        Common.setInjectHasControlDown(false);
+        MacOSInputFixesMod.LOGGER.info("[HandledScreenMixin] Disabled injectHasControlDown after keyPressed");
+    }
 }

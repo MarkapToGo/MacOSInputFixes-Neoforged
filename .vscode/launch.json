@@ -19,6 +19,7 @@
         "-Dfml.modFolders\u003dmacos_input_fixes%%/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
       ],
       "cwd": "${workspaceFolder}/run",
+      "env": {},
       "console": "internalConsole",
       "shortenCommandLine": "none"
     },
@@ -40,6 +41,7 @@
         "-Dfml.modFolders\u003dmacos_input_fixes%%/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
       ],
       "cwd": "${workspaceFolder}/run",
+      "env": {},
       "console": "internalConsole",
       "shortenCommandLine": "none"
     }
