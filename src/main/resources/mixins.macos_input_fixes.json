@@ -4,15 +4,15 @@
   "package": "com.hamarb123.macos_input_fixes.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "AbstractContainerScreenMixin",
     "MinecraftClientAccessor",
     "MinecraftClientMixin",
-    "MinecraftDropMixin",
     "MouseInvokerMixin",
     "MouseMixin",
     "MouseHandlerMixin",
     "PlayerInventoryMixin",
     "KeyboardMixin",
-    "HandledScreenMixin",
+    "KeyModifierControlMixin",
     "ScreenMixin",
     "gui.OptionListWidgetMixin"
   ],

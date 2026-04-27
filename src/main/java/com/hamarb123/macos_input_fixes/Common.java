@@ -1,6 +1,6 @@
 package com.hamarb123.macos_input_fixes;
 
-import com.hamarb123.macos_input_fixes.mixin.MinecraftClientAccessor;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,40 +13,79 @@ public class Common {
     public static final boolean IS_SYSTEM_MAC = Util.getPlatform() == Util.OS.OSX;
 
     /**
-     * Custom hasControlDown implementation that recognizes actual Control key on
-     * macOS.
-     * By default, macOS maps Ctrl+Click to right-click, which breaks many Minecraft
-     * features.
-     * 
-     * Behavior depends on ModOptions.useCommandKey:
-     * - false (default): Check actual Ctrl key (STRG on German keyboards)
-     * - true: Check Command key (⌘)
+     * Latest {@code modifiers} bitmask from GLFW key callback (updated every key event on Mac).
+     * macOS sometimes reports Ctrl+key combinations via this bitmask before/alongside stable
+     * {@link InputConstants#isKeyDown} results for the Control keys alone — needed for Ctrl/Strg+Q stack drop.
      */
-    public static boolean hasControlDownInjector() {
-        // Disable the injector for this call but restore after
-        boolean oldValue = injectHasControlDown();
-        setInjectHasControlDown(false);
-        boolean returnValue;
+    private static volatile int lastKeyboardModifiers;
 
-        if (!IS_SYSTEM_MAC) {
-            returnValue = Screen.hasControlDown();
-        } else {
-            long windowHandle = ((MinecraftClientAccessor) Minecraft.getInstance()).getWindow().getWindow();
+    /**
+     * Log extra detail for Ctrl/Strg + drop (hotbar and inventory). Enable with
+     * {@code -DmacosInputFixes.debugDropModifier=true}.
+     */
+    public static boolean debugDropModifier() {
+        return Boolean.getBoolean("macosInputFixes.debugDropModifier");
+    }
 
-            if (ModOptions.useCommandKey) {
-                // When useCommandKey is ON, use Command key (⌘)
-                // Screen.hasControlDown() on macOS already maps to Command
-                returnValue = Screen.hasControlDown();
-            } else {
-                // When useCommandKey is OFF (default), use actual Ctrl key (STRG)
-                // Check left control (341) and right control (345)
-                returnValue = GLFW.glfwGetKey(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
-                        || GLFW.glfwGetKey(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS;
-            }
+    public static void setLastKeyboardModifiers(int modifiers) {
+        lastKeyboardModifiers = modifiers;
+    }
+
+    private static boolean physicalStrgKeysDownUncached(long windowHandle) {
+        return InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL)
+                || InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL);
+    }
+
+    /**
+     * Physical Control / Strg held: GLFW key poll plus, on macOS only, the Control bit from the last
+     * key callback (covers driver/layout quirks where Strg+Q stack drop saw {@code false} from keys alone).
+     */
+    public static boolean physicalStrgKeysDown(long windowHandle) {
+        if (physicalStrgKeysDownUncached(windowHandle)) {
+            return true;
         }
+        return IS_SYSTEM_MAC && (lastKeyboardModifiers & GLFW.GLFW_MOD_CONTROL) != 0;
+    }
 
-        setInjectHasControlDown(oldValue);
-        return returnValue;
+    /**
+     * Same mapping as vanilla {@link Screen#hasControlDown()} but without calling Screen (avoids mixin
+     * re-entrancy). Used when options ask for vanilla ⌘/Ctrl semantics.
+     */
+    public static boolean vanillaStyleHasControlDown(long windowHandle) {
+        if (IS_SYSTEM_MAC) {
+            return InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_SUPER)
+                    || InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_SUPER);
+        }
+        return InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL)
+                || InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL);
+    }
+
+    /**
+     * Whether the “drop whole stack” modifier is held: mirrors mod options and never calls
+     * {@link Screen#hasControlDown()} (safe from recursive mixin).
+     */
+    public static boolean macStrgParityFullStackModifier(Minecraft mc) {
+        if (mc == null) {
+            return false;
+        }
+        if (!IS_SYSTEM_MAC) {
+            return Screen.hasControlDown();
+        }
+        long w = mc.getWindow().getWindow();
+        if (ModOptions.disableCtrlClickFix || ModOptions.useCommandKey) {
+            return vanillaStyleHasControlDown(w);
+        }
+        return physicalStrgKeysDown(w);
+    }
+
+    /** OR in {@link GLFW#GLFW_MOD_CONTROL} when GLFW key poll sees Strg — call before {@code handleKeybinds}. */
+    public static void mergeStrgKeysIntoModifierCache(long windowHandle) {
+        if (!IS_SYSTEM_MAC) {
+            return;
+        }
+        if (physicalStrgKeysDownUncached(windowHandle)) {
+            lastKeyboardModifiers |= GLFW.GLFW_MOD_CONTROL;
+        }
     }
 
     // Thread-local flags for controlling various mixin behaviors
@@ -73,18 +112,6 @@ public class Common {
 
     public static void setAllowedInputOSX2(boolean value) {
         _allowInputOSX2.set(value);
-    }
-
-    // Enable/disable the hasControlDown mixin
-    private static ThreadLocal<Boolean> _injectHasControlDown = new ThreadLocal<>();
-
-    public static boolean injectHasControlDown() {
-        Boolean value = _injectHasControlDown.get();
-        return value != null && value;
-    }
-
-    public static void setInjectHasControlDown(boolean value) {
-        _injectHasControlDown.set(value);
     }
 
     // Enable/disable the CyclingButtonWidgetMixin builder mixin

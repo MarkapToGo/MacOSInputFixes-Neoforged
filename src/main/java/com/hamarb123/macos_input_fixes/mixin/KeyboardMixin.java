@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+
 import com.hamarb123.macos_input_fixes.Common;
 import com.hamarb123.macos_input_fixes.MacOSInputFixesMod;
 import com.hamarb123.macos_input_fixes.ModOptions;
@@ -19,8 +22,21 @@ public class KeyboardMixin {
         if (!Common.IS_SYSTEM_MAC) {
             return;
         }
+        Common.setLastKeyboardModifiers(modifiers);
 
-        // Only log special keys to avoid spam
+        // Only log special keys to avoid spam (unless drop-modifier debug is on)
+        if (Common.debugDropModifier() && key == 81 && action != 0) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc != null) {
+                long w = mc.getWindow().getWindow();
+                MacOSInputFixesMod.LOGGER.info(
+                        "[MacOSInputFixes][drop] GLFW key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
+                        action,
+                        Integer.toHexString(modifiers),
+                        Common.physicalStrgKeysDown(w),
+                        Screen.hasControlDown());
+            }
+        }
         if (key == 256 || key == 258 || key == 81 || (modifiers & GLFW.GLFW_MOD_CONTROL) != 0
                 || (modifiers & GLFW.GLFW_MOD_SUPER) != 0) {
             MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, scancode={}, action={}, mods={}",

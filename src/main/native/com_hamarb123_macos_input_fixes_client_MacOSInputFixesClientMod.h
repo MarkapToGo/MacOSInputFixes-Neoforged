@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputF
 JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputFixesClientMod_setInterfaceSmoothScroll
   (JNIEnv *, jclass, jboolean);
 
+/*
+ * Class:     com_hamarb123_macos_input_fixes_client_MacOSInputFixesClientMod
+ * Method:    setBlockCommandQQuit
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputFixesClientMod_setBlockCommandQQuit
+  (JNIEnv *, jclass, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

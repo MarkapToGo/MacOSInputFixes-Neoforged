@@ -31,6 +31,9 @@ public class MacOSInputFixesClientMod {
 
     public static native void setInterfaceSmoothScroll(boolean option);
 
+    /** When true, native key monitor consumes Command+Q before it reaches GLFW / the OS. */
+    public static native void setBlockCommandQQuit(boolean block);
+
     static {
         MacOSInputFixesMod.LOGGER.info("[MacOSInputFixesClientMod] Static initializer - loading native library...");
         if (Common.IS_SYSTEM_MAC) {

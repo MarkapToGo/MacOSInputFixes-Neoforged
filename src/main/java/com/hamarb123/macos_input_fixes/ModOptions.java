@@ -148,6 +148,7 @@ public class ModOptions {
                         blockCommandQQuit,
                         value -> {
                             blockCommandQQuit = value;
+                            MacOSInputFixesMod.setBlockCommandQQuit(value);
                             saveOptions();
                         });
             }

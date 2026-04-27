@@ -19,6 +19,7 @@ JavaVM* jvm = NULL;
 double trackpadSensitivity = 20.0;
 bool momentumScrolling = false;
 bool interfaceSmoothScroll = false;
+bool blockCommandQQuit = true;
 jobject _keyCallback = NULL;
 jmethodID _KeyCallbackAccept = NULL;
 
@@ -42,6 +43,22 @@ double sgn(double x)
 
 double scrollX = 0.0;
 double scrollY = 0.0;
+
+/** GLFW/Cocoa may deliver a nil window for some fullscreen paths; still treat as our game window. */
+static bool eventTargetsOurWindow(NSEvent* event)
+{
+	if (_window == 0)
+	{
+		return false;
+	}
+	NSWindow* mw = (__bridge NSWindow*)(void*)_window;
+	if (mw == nil)
+	{
+		return false;
+	}
+	void* ew = (__bridge void*)event.window;
+	return ew == NULL || ew == (__bridge void*)mw;
+}
 
 void processScroll(NSEvent* event, double& x, double& y, double& xWithMomentum, double& yWithMomentum, double& ungroupedX, double& ungroupedY)
 {
@@ -252,8 +269,7 @@ JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputF
 		added = true;
 		[NSEvent addLocalMonitorForEventsMatchingMask: NSEventMaskScrollWheel handler: ^NSEvent *(NSEvent *event)
 		{
-			//check it is the relevant window and the call our handle function
-			if (event.window == (__bridge void*)_window)
+			if (eventTargetsOurWindow(event))
 			{
 				handleScroll(event);
 			}
@@ -261,9 +277,16 @@ JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputF
 		}];
 		[NSEvent addLocalMonitorForEventsMatchingMask: (NSEventMaskKeyDown | NSEventMaskKeyUp) handler: ^NSEvent *(NSEvent *event)
 		{
-			//check it is the relevant window and the call our handle function
-			if (event.window == (__bridge void*)_window)
+			if (eventTargetsOurWindow(event))
 			{
+				// Consume Command+Q at Cocoa level (GLFW/Java cancel is often too late).
+				if (blockCommandQQuit
+					&& event.type == NSEventTypeKeyDown
+					&& (event.modifierFlags & NSEventModifierFlagCommand) != 0
+					&& event.keyCode == 0x0C /* kVK_ANSI_Q */)
+				{
+					return nil;
+				}
 				handleKey(event);
 			}
 			return event;
@@ -312,4 +335,15 @@ JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputF
 	//this a function that is called from java
 	//it updates the momentum scrolling option
 	interfaceSmoothScroll = value != JNI_FALSE;
+}
+
+/*
+ * Class:     com_hamarb123_macos_input_fixes_client_MacOSInputFixesClientMod
+ * Method:    setBlockCommandQQuit
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_com_hamarb123_macos_1input_1fixes_client_MacOSInputFixesClientMod_setBlockCommandQQuit
+  (JNIEnv *, jclass, jboolean value)
+{
+	blockCommandQQuit = value != JNI_FALSE;
 }

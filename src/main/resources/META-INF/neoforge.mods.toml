@@ -15,6 +15,9 @@ displayURL="https://github.com/hamarb123/MCMacOSInputFixes"
 [[mixins]]
 config="mixins.macos_input_fixes.json"
 
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
 [[dependencies.${mod_id}]]
     modId="neoforge"
     type="required"

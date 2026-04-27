@@ -1,34 +1,47 @@
 package com.hamarb123.macos_input_fixes.mixin;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.hamarb123.macos_input_fixes.Common;
 import com.hamarb123.macos_input_fixes.MacOSInputFixesMod;
-import com.hamarb123.macos_input_fixes.ModOptions;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
 
+    @Unique
+    private static boolean macosInputFixes$loggedScreenOverrideOnce;
+
     /**
-     * Patches hasControlDown() on macOS to properly detect the Control key.
-     * macOS normally treats Ctrl+Click as right-click, which breaks many features.
+     * On macOS, vanilla {@link Screen#hasControlDown()} maps ⌘ to “control”. We replace the whole method
+     * outcome via {@link Common#macStrgParityFullStackModifier} so we never recurse into this inject.
      */
     @Inject(at = @At("HEAD"), method = "hasControlDown", cancellable = true)
     private static void hasControlDown(CallbackInfoReturnable<Boolean> info) {
-        if (!Common.IS_SYSTEM_MAC)
+        if (!Common.IS_SYSTEM_MAC) {
             return;
-        if (ModOptions.disableCtrlClickFix)
+        }
+        Minecraft mc = Minecraft.getInstance();
+        if (mc == null) {
             return;
-        if (!Common.injectHasControlDown())
-            return;
-
-        // Use our custom implementation that properly detects Control key
-        boolean result = Common.hasControlDownInjector();
-        MacOSInputFixesMod.LOGGER.info("[ScreenMixin] hasControlDown called, returning: {}", result);
-        info.setReturnValue(result);
+        }
+        boolean value = Common.macStrgParityFullStackModifier(mc);
+        if (!macosInputFixes$loggedScreenOverrideOnce) {
+            macosInputFixes$loggedScreenOverrideOnce = true;
+            MacOSInputFixesMod.LOGGER.info(
+                    "[MacOSInputFixes] Screen.hasControlDown() routed through macStrgParity (no recursion). "
+                            + "-DmacosInputFixes.debugDropModifier=true for traces.");
+        }
+        if (Common.debugDropModifier()) {
+            MacOSInputFixesMod.LOGGER.info("[MacOSInputFixes] Screen.hasControlDown -> {}", value);
+        } else {
+            MacOSInputFixesMod.LOGGER.debug("[MacOSInputFixes] Screen.hasControlDown -> {}", value);
+        }
+        info.setReturnValue(value);
     }
 }

@@ -50,4 +50,15 @@ public class MacOSInputFixesMod {
     public static void setInterfaceSmoothScroll(boolean option) {
         MacOSInputFixesClientMod.setInterfaceSmoothScroll(option);
     }
+
+    public static void setBlockCommandQQuit(boolean block) {
+        if (!Common.IS_SYSTEM_MAC) {
+            return;
+        }
+        try {
+            MacOSInputFixesClientMod.setBlockCommandQQuit(block);
+        } catch (UnsatisfiedLinkError e) {
+            LOGGER.warn("[MacOSInputFixes] Native setBlockCommandQQuit unavailable; rebuild src/main/native (dylib out of date)", e);
+        }
+    }
 }
