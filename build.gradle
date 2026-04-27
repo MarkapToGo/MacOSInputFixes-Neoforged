@@ -6,7 +6,12 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.139'
 }
 
-version = project.mod_version
+// Automatic dotted date version (yy.MM.dd, e.g. 26.04.27). JVM default timezone at configure time.
+def autoModVersion = java.time.LocalDate.now().format(
+        java.time.format.DateTimeFormatter.ofPattern('yy.MM.dd'))
+version = autoModVersion
+project.ext.mod_version = autoModVersion
+
 group = project.mod_group_id
 
 base {
