@@ -49,7 +49,7 @@ public class MinecraftClientMixin {
             return;
         }
         Minecraft mc = (Minecraft) (Object) this;
-        Common.mergeStrgKeysIntoModifierCache(mc.getWindow().getWindow());
+        Common.mergeStrgKeysIntoModifierCache(mc.getWindow());
     }
 
     /**
@@ -83,7 +83,7 @@ public class MinecraftClientMixin {
             return;
         }
         Minecraft mc = (Minecraft) (Object) this;
-        long w = mc.getWindow().getWindow();
+        com.mojang.blaze3d.platform.Window w = mc.getWindow();
         MacOSInputFixesMod.LOGGER.info(
                 "[MacOSInputFixes][drop] hotbar drop invoke: macStrgParity={} physicalStrgKeysDown={} | disableCtrlFix={} useCommandKey={}",
                 Common.macStrgParityFullStackModifier(mc),
@@ -101,7 +101,7 @@ public class MinecraftClientMixin {
             return;
         }
 
-        long glfwWindow = ((MinecraftClientAccessor) client).getWindow().getWindow();
+        long glfwWindow = ((MinecraftClientAccessor) client).getWindow().handle();
         long cocoaWindow = GLFWNativeCocoa.glfwGetCocoaWindow(glfwWindow);
         MacOSInputFixesMod.LOGGER.info("[MinecraftClientMixin] GLFW window handle = {}", glfwWindow);
         MacOSInputFixesMod.LOGGER.info("[MinecraftClientMixin] Cocoa NSWindow handle = {}", cocoaWindow);
@@ -132,7 +132,7 @@ public class MinecraftClientMixin {
                     modifiers);
             Common.setAllowedInputOSX2(true);
             try {
-                client.keyboardHandler.keyPress(glfwWindow, key, scancode, action, modifiers);
+                ((com.hamarb123.macos_input_fixes.mixin.KeyboardHandlerAccessor) client.keyboardHandler).invokeKeyPress(glfwWindow, action, new net.minecraft.client.input.KeyEvent(key, scancode, modifiers));
             } finally {
                 Common.setAllowedInputOSX2(false);
             }

@@ -7,13 +7,12 @@
     "AbstractContainerScreenMixin",
     "MinecraftClientAccessor",
     "MinecraftClientMixin",
+    "KeyboardHandlerAccessor",
     "MouseInvokerMixin",
     "MouseMixin",
     "MouseHandlerMixin",
-    "PlayerInventoryMixin",
     "KeyboardMixin",
     "KeyModifierControlMixin",
-    "ScreenMixin",
     "gui.OptionListWidgetMixin"
   ],
   "injectors": {

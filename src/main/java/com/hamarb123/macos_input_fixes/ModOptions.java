@@ -215,31 +215,31 @@ public class ModOptions {
 
             if (compoundTag.contains("trackpadSensitivity")) {
                 try {
-                    setTrackpadSensitivity(Double.parseDouble(compoundTag.getString("trackpadSensitivity")));
+                    setTrackpadSensitivity(Double.parseDouble(compoundTag.getString("trackpadSensitivity").orElse("20.0")));
                 } catch (Exception ex) {
                     ex.printStackTrace(System.err);
                 }
             }
             if (compoundTag.contains("reverseHotbarScrolling")) {
-                reverseHotbarScrolling = Boolean.parseBoolean(compoundTag.getString("reverseHotbarScrolling"));
+                reverseHotbarScrolling = Boolean.parseBoolean(compoundTag.getString("reverseHotbarScrolling").orElse("false"));
             }
             if (compoundTag.contains("reverseScrolling")) {
-                reverseScrolling = Boolean.parseBoolean(compoundTag.getString("reverseScrolling"));
+                reverseScrolling = Boolean.parseBoolean(compoundTag.getString("reverseScrolling").orElse("false"));
             }
             if (compoundTag.contains("momentumScrolling")) {
-                setMomentumScrolling(Boolean.parseBoolean(compoundTag.getString("momentumScrolling")));
+                setMomentumScrolling(Boolean.parseBoolean(compoundTag.getString("momentumScrolling").orElse("false")));
             }
             if (compoundTag.contains("interfaceSmoothScroll")) {
-                setInterfaceSmoothScroll(Boolean.parseBoolean(compoundTag.getString("interfaceSmoothScroll")));
+                setInterfaceSmoothScroll(Boolean.parseBoolean(compoundTag.getString("interfaceSmoothScroll").orElse("false")));
             }
             if (compoundTag.contains("disableCtrlClickFix")) {
-                disableCtrlClickFix = Boolean.parseBoolean(compoundTag.getString("disableCtrlClickFix"));
+                disableCtrlClickFix = Boolean.parseBoolean(compoundTag.getString("disableCtrlClickFix").orElse("false"));
             }
             if (compoundTag.contains("useCommandKey")) {
-                useCommandKey = Boolean.parseBoolean(compoundTag.getString("useCommandKey"));
+                useCommandKey = Boolean.parseBoolean(compoundTag.getString("useCommandKey").orElse("false"));
             }
             if (compoundTag.contains("blockCommandQQuit")) {
-                blockCommandQQuit = Boolean.parseBoolean(compoundTag.getString("blockCommandQQuit"));
+                blockCommandQQuit = Boolean.parseBoolean(compoundTag.getString("blockCommandQQuit").orElse("true"));
             }
 
             loadedInterface = false;

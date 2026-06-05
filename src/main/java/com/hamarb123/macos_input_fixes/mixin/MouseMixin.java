@@ -1,6 +1,7 @@
 package com.hamarb123.macos_input_fixes.mixin;
 
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -48,6 +49,10 @@ public class MouseMixin {
 
     @ModifyVariable(method = "onScroll(JDD)V", at = @At("HEAD"), ordinal = 1, argsOnly = true)
     private double maybeReverseVScroll(double value) {
-        return ModOptions.reverseScrolling ? -value : value;
+        double v = ModOptions.reverseScrolling ? -value : value;
+        if (ModOptions.reverseHotbarScrolling && Minecraft.getInstance().screen == null) {
+            v = -v;
+        }
+        return v;
     }
 }

@@ -2,7 +2,6 @@ package com.hamarb123.macos_input_fixes.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +20,7 @@ import com.hamarb123.macos_input_fixes.ModOptions;
 public class AbstractContainerScreenMixin {
 
     @Inject(method = "keyPressed", at = @At("HEAD"))
-    private void macosInputFixes$logDropKeyContext(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    private void macosInputFixes$logDropKeyContext(net.minecraft.client.input.KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (!Common.IS_SYSTEM_MAC) {
             return;
         }
@@ -32,7 +31,9 @@ public class AbstractContainerScreenMixin {
         if (mc == null || mc.options == null) {
             return;
         }
-        InputConstants.Key key = InputConstants.getKey(keyCode, scanCode);
+        int keyCode = event.key();
+        int scanCode = event.scancode();
+        InputConstants.Key key = InputConstants.getKey(event);
         boolean dropMatches = mc.options.keyDrop.isActiveAndMatches(key);
         if (!dropMatches) {
             return;
@@ -40,13 +41,13 @@ public class AbstractContainerScreenMixin {
         AbstractContainerScreen<?> self = (AbstractContainerScreen<?>) (Object) this;
         Slot hovered = self.getSlotUnderMouse();
         boolean hoveredHasStack = hovered != null && hovered.hasItem();
-        long w = mc.getWindow().getWindow();
+        com.mojang.blaze3d.platform.Window w = mc.getWindow();
         MacOSInputFixesMod.LOGGER.info(
                 "[MacOSInputFixes][drop] inventory keyPressed: keyDrop.isActiveAndMatches={} | keyCode={} scan={} | Screen.hasControlDown()={} (full stack drop uses this) | physicalStrg={} | disableCtrlFix={} useCommandKey={} | hoveredHasStack={}",
                 dropMatches,
                 keyCode,
                 scanCode,
-                Screen.hasControlDown(),
+                Common.vanillaStyleHasControlDown(w),
                 Common.physicalStrgKeysDown(w),
                 ModOptions.disableCtrlClickFix,
                 ModOptions.useCommandKey,

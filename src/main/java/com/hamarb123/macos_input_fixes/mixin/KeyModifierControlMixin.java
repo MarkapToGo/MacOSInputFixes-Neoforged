@@ -43,7 +43,7 @@ public class KeyModifierControlMixin {
         if (mc == null) {
             return;
         }
-        long window = mc.getWindow().getWindow();
+        long window = mc.getWindow().handle();
         boolean commandHeld = GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SUPER) == GLFW.GLFW_PRESS
                 || GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_SUPER) == GLFW.GLFW_PRESS;
         if (!macosInputFixes$loggedKeyModifierOnce) {

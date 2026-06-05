@@ -1,9 +1,8 @@
 package com.hamarb123.macos_input_fixes;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -31,47 +30,47 @@ public class Common {
         lastKeyboardModifiers = modifiers;
     }
 
-    private static boolean physicalStrgKeysDownUncached(long windowHandle) {
-        return InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL)
-                || InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL);
+    private static boolean physicalStrgKeysDownUncached(com.mojang.blaze3d.platform.Window window) {
+        return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_CONTROL)
+                || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_CONTROL);
     }
 
     /**
      * Physical Control / Strg held: GLFW key poll plus, on macOS only, the Control bit from the last
      * key callback (covers driver/layout quirks where Strg+Q stack drop saw {@code false} from keys alone).
      */
-    public static boolean physicalStrgKeysDown(long windowHandle) {
-        if (physicalStrgKeysDownUncached(windowHandle)) {
+    public static boolean physicalStrgKeysDown(com.mojang.blaze3d.platform.Window window) {
+        if (physicalStrgKeysDownUncached(window)) {
             return true;
         }
         return IS_SYSTEM_MAC && (lastKeyboardModifiers & GLFW.GLFW_MOD_CONTROL) != 0;
     }
 
     /**
-     * Same mapping as vanilla {@link Screen#hasControlDown()} but without calling Screen (avoids mixin
+     * Same mapping as vanilla {@code Screen#hasControlDown()} but without calling Screen (avoids mixin
      * re-entrancy). Used when options ask for vanilla ⌘/Ctrl semantics.
      */
-    public static boolean vanillaStyleHasControlDown(long windowHandle) {
+    public static boolean vanillaStyleHasControlDown(com.mojang.blaze3d.platform.Window window) {
         if (IS_SYSTEM_MAC) {
-            return InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_SUPER)
-                    || InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_SUPER);
+            return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SUPER)
+                    || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SUPER);
         }
-        return InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL)
-                || InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL);
+        return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_CONTROL)
+                || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_CONTROL);
     }
 
     /**
      * Whether the “drop whole stack” modifier is held: mirrors mod options and never calls
-     * {@link Screen#hasControlDown()} (safe from recursive mixin).
+     * {@code Screen#hasControlDown()} (safe from recursive mixin).
      */
     public static boolean macStrgParityFullStackModifier(Minecraft mc) {
         if (mc == null) {
             return false;
         }
+        com.mojang.blaze3d.platform.Window w = mc.getWindow();
         if (!IS_SYSTEM_MAC) {
-            return Screen.hasControlDown();
+            return vanillaStyleHasControlDown(w);
         }
-        long w = mc.getWindow().getWindow();
         if (ModOptions.disableCtrlClickFix || ModOptions.useCommandKey) {
             return vanillaStyleHasControlDown(w);
         }
@@ -79,11 +78,11 @@ public class Common {
     }
 
     /** OR in {@link GLFW#GLFW_MOD_CONTROL} when GLFW key poll sees Strg — call before {@code handleKeybinds}. */
-    public static void mergeStrgKeysIntoModifierCache(long windowHandle) {
+    public static void mergeStrgKeysIntoModifierCache(com.mojang.blaze3d.platform.Window window) {
         if (!IS_SYSTEM_MAC) {
             return;
         }
-        if (physicalStrgKeysDownUncached(windowHandle)) {
+        if (physicalStrgKeysDownUncached(window)) {
             lastKeyboardModifiers |= GLFW.GLFW_MOD_CONTROL;
         }
     }
