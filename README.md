@@ -7,7 +7,7 @@ A NeoForge port of [hamarb123's MCMacOSInputFixes](https://github.com/hamarb123/
 | Author | Contribution |
 |--------|--------------|
 | **hamarb123** | Original Fabric mod, native macOS code, core fix implementations |
-| **Markap** | NeoForge 1.21.1 port, simplified codebase for single-version support |
+| **Markap** | NeoForge 1.21.1 & 26.1.2 ports, simplified codebase for single-version support |
 
 ## What This Mod Fixes
 
@@ -19,8 +19,8 @@ A NeoForge port of [hamarb123's MCMacOSInputFixes](https://github.com/hamarb123/
 
 ## Requirements
 
-- Minecraft 1.21.1
-- NeoForge 21.1+
+- Minecraft 26.1.2
+- NeoForge 26.1.2+
 - macOS (the mod loads safely on other platforms but only applies fixes on macOS)
 
 ## Building
