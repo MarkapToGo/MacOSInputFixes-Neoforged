@@ -2,11 +2,11 @@ name: Build
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, minecraft-26.1.2]
     tags:
       - '*'
   pull_request:
-    branches: [master, main]
+    branches: [master, main, minecraft-26.1.2]
   workflow_dispatch:
 
 jobs:
@@ -21,10 +21,10 @@ jobs:
           make
           ls -l ../resources/natives/macos_input_fixes.dylib
           
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'temurin'
           
       - name: Validate Gradle wrapper
@@ -41,3 +41,18 @@ jobs:
         with:
           name: Mod-Artifacts
           path: build/libs/*.jar
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/minecraft-26.1.2'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v26.1.2-${{ github.run_number }}
+          name: MacOS Input Fixes v26.1.2-build${{ github.run_number }}
+          body: |
+            Automatic release of MacOS Input Fixes for Minecraft 26.1.2.
+            Built from branch `minecraft-26.1.2`.
+          draft: false
+          prerelease: false
+          files: build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
