@@ -48,12 +48,9 @@ public class KeyModifierControlMixin {
         if (!macosInputFixes$loggedKeyModifierOnce) {
             macosInputFixes$loggedKeyModifierOnce = true;
             MacOSInputFixesMod.LOGGER.info(
-                    "[MacOSInputFixes] NeoForge KeyModifier.CONTROL.isActive uses Command (⌘) on mac when Use Command key=OFF (so NONE keybinds still work). DEBUG logs each call.");
+                    "[MacOSInputFixes] NeoForge KeyModifier.CONTROL.isActive uses Command (⌘) on mac when Use Command key=OFF (so NONE keybinds still work).");
         }
-        MacOSInputFixesMod.LOGGER.debug(
-                "[MacOSInputFixes] KeyModifier.CONTROL.isActive -> {} (ctx={})",
-                commandHeld,
-                conflictContext);
+        // No per-call logging: isActive runs for many keybinds every frame (it flooded debug.log).
         cir.setReturnValue(commandHeld);
     }
 }

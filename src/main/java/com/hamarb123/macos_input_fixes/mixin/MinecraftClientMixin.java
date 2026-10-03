@@ -117,14 +117,16 @@ public class MinecraftClientMixin {
         }
 
         ScrollCallback scrollCallback = (x, y, xWithMomentum, yWithMomentum, ungroupedX, ungroupedY) -> {
-            MacOSInputFixesMod.LOGGER.debug(
-                    "[NativeCallback] SCROLL from native: x={}, y={}, xMom={}, yMom={}, uX={}, uY={}",
-                    x,
-                    y,
-                    xWithMomentum,
-                    yWithMomentum,
-                    ungroupedX,
-                    ungroupedY);
+            if (Common.debugDropModifier()) {
+                MacOSInputFixesMod.LOGGER.info(
+                        "[NativeCallback] SCROLL from native: x={}, y={}, xMom={}, yMom={}, uX={}, uY={}",
+                        x,
+                        y,
+                        xWithMomentum,
+                        yWithMomentum,
+                        ungroupedX,
+                        ungroupedY);
+            }
             Common.setAllowedInputOSX(true);
             try {
                 ((MouseInvokerMixin) client.mouseHandler).invokeOnScroll(sdlWindow, x, y);
@@ -134,12 +136,14 @@ public class MinecraftClientMixin {
         };
 
         KeyCallback keyCallback = (key, scancode, action, modifiers) -> {
-            MacOSInputFixesMod.LOGGER.debug(
-                    "[NativeCallback] KEY from native: key={}, scancode={}, action={}, mods={}",
-                    key,
-                    scancode,
-                    action,
-                    modifiers);
+            if (Common.debugDropModifier()) {
+                MacOSInputFixesMod.LOGGER.info(
+                        "[NativeCallback] KEY from native: key={}, scancode={}, action={}, mods={}",
+                        key,
+                        scancode,
+                        action,
+                        modifiers);
+            }
             Common.setAllowedInputOSX2(true);
             try {
                 ((KeyboardHandlerAccessor) client.keyboardHandler).invokeKeyPress(sdlWindow,

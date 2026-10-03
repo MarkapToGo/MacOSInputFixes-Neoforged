@@ -27,28 +27,32 @@ public class KeyboardMixin {
 
         Common.setLastKeyboardModifiers(modifiers);
 
-        // Only log special keys to avoid spam (unless drop-modifier debug is on)
-        if (Common.debugDropModifier() && key == InputConstants.KEY_Q && action != 0) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc != null) {
-                MacOSInputFixesMod.LOGGER.info(
-                        "[MacOSInputFixes][drop] key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
-                        action,
-                        Integer.toHexString(modifiers),
-                        Common.physicalStrgKeysDown(mc.getWindow()),
-                        Common.vanillaStyleHasControlDown(mc.getWindow()));
+        // Key events are only logged with -DmacosInputFixes.debugDropModifier=true (privacy and log spam)
+        if (Common.debugDropModifier()) {
+            if (key == InputConstants.KEY_Q && action != InputConstants.RELEASE) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc != null) {
+                    MacOSInputFixesMod.LOGGER.info(
+                            "[MacOSInputFixes][drop] key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
+                            action,
+                            Integer.toHexString(modifiers),
+                            Common.physicalStrgKeysDown(mc.getWindow()),
+                            Common.vanillaStyleHasControlDown(mc.getWindow()));
+                }
             }
-        }
-        if (key == InputConstants.KEY_ESCAPE || key == InputConstants.KEY_TAB || key == InputConstants.KEY_Q
-                || (modifiers & InputConstants.MOD_CONTROL) != 0 || (modifiers & InputConstants.MOD_SUPER) != 0) {
-            MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, keycode={}, action={}, mods={}",
-                    key, keycode, action, modifiers);
+            if (key == InputConstants.KEY_ESCAPE || key == InputConstants.KEY_TAB || key == InputConstants.KEY_Q
+                    || (modifiers & InputConstants.MOD_CONTROL) != 0 || (modifiers & InputConstants.MOD_SUPER) != 0) {
+                MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, keycode={}, action={}, mods={}",
+                        key, keycode, action, modifiers);
+            }
         }
 
         // Block Command+Q from quitting the game if option is enabled
         // MOD_SUPER = Command key on macOS
         if (ModOptions.blockCommandQQuit && key == InputConstants.KEY_Q && (modifiers & InputConstants.MOD_SUPER) != 0) {
-            MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] -> BLOCKED: Command+Q (quit prevention)");
+            if (action == InputConstants.PRESS) {
+                MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] Blocked Command+Q (quit prevention)");
+            }
             info.cancel();
             return;
         }
@@ -64,10 +68,12 @@ public class KeyboardMixin {
         if (key == InputConstants.KEY_TAB || key == InputConstants.KEY_ESCAPE) {
             if (!Common.allowInputOSX2()) {
                 // This is the SDL event (duplicate) - cancel it
-                MacOSInputFixesMod.LOGGER
-                        .info("[KeyboardMixin] -> CANCELLED: Tab/Esc not from native (SDL duplicate)");
+                if (Common.debugDropModifier()) {
+                    MacOSInputFixesMod.LOGGER
+                            .info("[KeyboardMixin] -> CANCELLED: Tab/Esc not from native (SDL duplicate)");
+                }
                 info.cancel();
-            } else {
+            } else if (Common.debugDropModifier()) {
                 // This is the native event - allow it
                 MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] -> ALLOWED: from native callback");
             }

@@ -9,7 +9,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="${mod_authors}"
 description='''${mod_description}'''
-logoFile="icon.png"
+iconFile="icon.png"
 displayURL="https://github.com/hamarb123/MCMacOSInputFixes"
 
 [[mixins]]
