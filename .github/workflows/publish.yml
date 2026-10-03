@@ -50,8 +50,8 @@ jobs:
           version: ${{ github.event.release.tag_name || inputs.version }}
           version-type: release
           
-          loaders: neoforge
-          game-versions: 26.1.2
+          loaders: fabric
+          game-versions: 26.3
           
           changelog: ${{ github.event.release.body }}
           

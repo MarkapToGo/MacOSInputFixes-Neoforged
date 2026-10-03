@@ -1,7 +1,8 @@
 package com.hamarb123.macos_input_fixes.mixin;
 
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFWNativeCocoa;
+import org.lwjgl.sdl.SDLProperties;
+import org.lwjgl.sdl.SDLVideo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -54,12 +55,12 @@ public class MinecraftClientMixin {
 
     /**
      * Forces stack drop modifier from {@link Common#macStrgParityFullStackModifier} so hotbar drop does not
-     * depend on mixin ordering or Screen.hasControlDown quirks at this callsite.
+     * depend on mixin ordering or Minecraft.hasControlDown quirks at this callsite.
      */
     @ModifyArg(
             method = "handleKeybinds",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;drop(Z)Z"),
-            index = 0)
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;dropItem(Lnet/minecraft/client/player/LocalPlayer;Z)V"),
+            index = 1)
     private boolean macosInputFixes$hotbarDropFullStackArg(boolean vanillaFullStack) {
         if (!Common.IS_SYSTEM_MAC) {
             return vanillaFullStack;
@@ -68,7 +69,7 @@ public class MinecraftClientMixin {
         boolean v = Common.macStrgParityFullStackModifier(mc);
         if (Common.debugDropModifier()) {
             MacOSInputFixesMod.LOGGER.info(
-                    "[MacOSInputFixes][drop] ModifyArg LocalPlayer.drop fullStack: vanilla={} -> {}",
+                    "[MacOSInputFixes][drop] ModifyArg MultiPlayerGameMode.dropItem all: vanilla={} -> {}",
                     vanillaFullStack,
                     v);
         }
@@ -77,7 +78,7 @@ public class MinecraftClientMixin {
 
     @Inject(
             method = "handleKeybinds",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;drop(Z)Z"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;dropItem(Lnet/minecraft/client/player/LocalPlayer;Z)V"))
     private void macosInputFixes$logHotbarDropAttempt(CallbackInfo ci) {
         if (!Common.IS_SYSTEM_MAC || !Common.debugDropModifier()) {
             return;
@@ -101,10 +102,19 @@ public class MinecraftClientMixin {
             return;
         }
 
-        long glfwWindow = ((MinecraftClientAccessor) client).getWindow().handle();
-        long cocoaWindow = GLFWNativeCocoa.glfwGetCocoaWindow(glfwWindow);
-        MacOSInputFixesMod.LOGGER.info("[MinecraftClientMixin] GLFW window handle = {}", glfwWindow);
+        // Options are loaded by now: push our MC-122296 choice into SDL (see MacosUtilMixin).
+        Common.applyCtrlClickEmulation();
+
+        // Since 26.3 the window is an SDL window; ask SDL for the backing NSWindow.
+        long sdlWindow = ((MinecraftClientAccessor) client).getWindow().handle();
+        long cocoaWindow = SDLProperties.SDL_GetPointerProperty(
+                SDLVideo.SDL_GetWindowProperties(sdlWindow), SDLVideo.SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, 0L);
+        MacOSInputFixesMod.LOGGER.info("[MinecraftClientMixin] SDL window handle = {}", sdlWindow);
         MacOSInputFixesMod.LOGGER.info("[MinecraftClientMixin] Cocoa NSWindow handle = {}", cocoaWindow);
+        if (cocoaWindow == 0L) {
+            MacOSInputFixesMod.LOGGER.warn("[MinecraftClientMixin] No Cocoa NSWindow from SDL, skipping native callbacks");
+            return;
+        }
 
         ScrollCallback scrollCallback = (x, y, xWithMomentum, yWithMomentum, ungroupedX, ungroupedY) -> {
             MacOSInputFixesMod.LOGGER.debug(
@@ -117,7 +127,7 @@ public class MinecraftClientMixin {
                     ungroupedY);
             Common.setAllowedInputOSX(true);
             try {
-                ((MouseInvokerMixin) client.mouseHandler).invokeOnScroll(glfwWindow, x, y);
+                ((MouseInvokerMixin) client.mouseHandler).invokeOnScroll(sdlWindow, x, y);
             } finally {
                 Common.setAllowedInputOSX(false);
             }
@@ -132,7 +142,8 @@ public class MinecraftClientMixin {
                     modifiers);
             Common.setAllowedInputOSX2(true);
             try {
-                ((com.hamarb123.macos_input_fixes.mixin.KeyboardHandlerAccessor) client.keyboardHandler).invokeKeyPress(glfwWindow, action, new net.minecraft.client.input.KeyEvent(key, scancode, modifiers));
+                ((KeyboardHandlerAccessor) client.keyboardHandler).invokeKeyPress(sdlWindow,
+                        Common.keyActionFromNative(action), Common.keyEventFromNative(key, modifiers));
             } finally {
                 Common.setAllowedInputOSX2(false);
             }

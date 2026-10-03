@@ -5,18 +5,16 @@ import com.mojang.logging.LogUtils;
 import com.hamarb123.macos_input_fixes.client.MacOSInputFixesClientMod;
 import com.hamarb123.macos_input_fixes.client.KeyCallback;
 import com.hamarb123.macos_input_fixes.client.ScrollCallback;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.fabricmc.api.ClientModInitializer;
 
-@Mod(MacOSInputFixesMod.MODID)
-public class MacOSInputFixesMod {
+public class MacOSInputFixesMod implements ClientModInitializer {
     public static final String MODID = "macos_input_fixes";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public MacOSInputFixesMod(IEventBus modEventBus) {
+    @Override
+    public void onInitializeClient() {
         LOGGER.info("[MacOSInputFixes] ========================================");
-        LOGGER.info("[MacOSInputFixes] Mod constructor called!");
+        LOGGER.info("[MacOSInputFixes] Client initializer called!");
         LOGGER.info("[MacOSInputFixes] IS_SYSTEM_MAC = {}", Common.IS_SYSTEM_MAC);
         LOGGER.info("[MacOSInputFixes] ========================================");
 
@@ -25,11 +23,6 @@ public class MacOSInputFixesMod {
             MacOSInputFixesClientMod.ensureLoaded();
         }
 
-        modEventBus.addListener(this::clientSetup);
-    }
-
-    private void clientSetup(final FMLClientSetupEvent event) {
-        LOGGER.info("[MacOSInputFixes] clientSetup event fired");
         ModOptions.loadOptions();
         LOGGER.info("[MacOSInputFixes] Options loaded successfully");
     }

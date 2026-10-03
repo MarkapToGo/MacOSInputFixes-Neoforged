@@ -2,11 +2,11 @@ name: Build
 
 on:
   push:
-    branches: [master, main, minecraft-26.1.2]
+    branches: [master, main, fabric-26.3]
     tags:
       - '*'
   pull_request:
-    branches: [master, main, minecraft-26.1.2]
+    branches: [master, main, fabric-26.3]
   workflow_dispatch:
 
 jobs:
@@ -45,14 +45,14 @@ jobs:
           path: build/libs/*.jar
 
       - name: Create Release
-        if: github.ref == 'refs/heads/minecraft-26.1.2'
+        if: github.ref == 'refs/heads/fabric-26.3'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v26.1.2-${{ github.run_number }}
-          name: MacOS Input Fixes v26.1.2-build${{ github.run_number }}
+          tag_name: fabric-v26.3-${{ github.run_number }}
+          name: MacOS Input Fixes (Fabric) v26.3-build${{ github.run_number }}
           body: |
-            Automatic release of MacOS Input Fixes for Minecraft 26.1.2.
-            Built from branch `minecraft-26.1.2`.
+            Automatic release of MacOS Input Fixes for Minecraft 26.3 (Fabric).
+            Built from branch `fabric-26.3`.
           draft: false
           prerelease: false
           files: build/libs/*.jar

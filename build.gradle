@@ -1,9 +1,7 @@
 plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
+    // Minecraft 26.1+ is unobfuscated: use the non-remapping Loom plugin.
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.141'
 }
 
 // Automatic dotted date version (yy.MM.dd, e.g. 26.04.27). JVM default timezone at configure time.
@@ -18,24 +16,7 @@ base {
     archivesName = project.mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-
-neoForge {
-    version = project.neo_version
-
-    runs {
-        client {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        server {
-            server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-    }
-
+loom {
     mods {
         "${project.mod_id}" {
             sourceSet sourceSets.main
@@ -43,33 +24,45 @@ neoForge {
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
 repositories {
-    mavenLocal()
 }
 
 dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
-tasks.withType(ProcessResources).configureEach {
+processResources {
     var replaceProperties = [
-        minecraft_version      : project.minecraft_version,
-        minecraft_version_range: project.minecraft_version_range,
-        neo_version            : project.neo_version,
-        neo_version_range      : project.neo_version_range,
-        loader_version         : project.loader_version,
-        mod_id                 : project.mod_id,
-        mod_name               : project.mod_name,
-        mod_license            : project.mod_license,
-        mod_version            : project.mod_version,
-        mod_authors            : project.mod_authors,
-        mod_description        : project.mod_description
+        minecraft_version: project.minecraft_version,
+        loader_version   : project.loader_version,
+        mod_id           : project.mod_id,
+        mod_name         : project.mod_name,
+        mod_license      : project.mod_license,
+        mod_version      : project.mod_version,
+        mod_description  : project.mod_description
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/neoforge.mods.toml']) {
+    filesMatching('fabric.mod.json') {
         expand replaceProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+    from('LICENSE') {
+        rename { "${it}_${project.mod_id}" }
     }
 }
 
@@ -84,8 +77,4 @@ publishing {
             url "file://${project.projectDir}/repo"
         }
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
 }

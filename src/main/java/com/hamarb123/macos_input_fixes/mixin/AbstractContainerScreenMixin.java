@@ -1,10 +1,11 @@
 package com.hamarb123.macos_input_fixes.mixin;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -19,6 +20,9 @@ import com.hamarb123.macos_input_fixes.ModOptions;
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
 
+    @Shadow
+    protected @Nullable Slot hoveredSlot;
+
     @Inject(method = "keyPressed", at = @At("HEAD"))
     private void macosInputFixes$logDropKeyContext(net.minecraft.client.input.KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (!Common.IS_SYSTEM_MAC) {
@@ -32,21 +36,18 @@ public class AbstractContainerScreenMixin {
             return;
         }
         int keyCode = event.key();
-        int scanCode = event.scancode();
-        InputConstants.Key key = InputConstants.getKey(event);
-        boolean dropMatches = mc.options.keyDrop.isActiveAndMatches(key);
+        int keycode = event.keycode();
+        boolean dropMatches = mc.options.keyDrop.matches(event);
         if (!dropMatches) {
             return;
         }
-        AbstractContainerScreen<?> self = (AbstractContainerScreen<?>) (Object) this;
-        Slot hovered = self.getSlotUnderMouse();
-        boolean hoveredHasStack = hovered != null && hovered.hasItem();
+        boolean hoveredHasStack = hoveredSlot != null && hoveredSlot.hasItem();
         com.mojang.blaze3d.platform.Window w = mc.getWindow();
         MacOSInputFixesMod.LOGGER.info(
-                "[MacOSInputFixes][drop] inventory keyPressed: keyDrop.isActiveAndMatches={} | keyCode={} scan={} | Screen.hasControlDown()={} (full stack drop uses this) | physicalStrg={} | disableCtrlFix={} useCommandKey={} | hoveredHasStack={}",
+                "[MacOSInputFixes][drop] inventory keyPressed: keyDrop.matches={} | key={} keycode={} | vanillaStyleHasControlDown={} (full stack drop uses this) | physicalStrg={} | disableCtrlFix={} useCommandKey={} | hoveredHasStack={}",
                 dropMatches,
                 keyCode,
-                scanCode,
+                keycode,
                 Common.vanillaStyleHasControlDown(w),
                 Common.physicalStrgKeysDown(w),
                 ModOptions.disableCtrlClickFix,

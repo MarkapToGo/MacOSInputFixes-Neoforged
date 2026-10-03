@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${mod_version}",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
+    "authors": [
+        "hamarb123 (Original Fabric Mod)",
+        "Markap (NeoForge & Fabric 26.x Ports)"
+    ],
+    "contact": {
+        "homepage": "https://github.com/hamarb123/MCMacOSInputFixes",
+        "issues": "https://github.com/hamarb123/MCMacOSInputFixes/issues"
+    },
+    "license": "${mod_license}",
+    "icon": "assets/macos_input_fixes/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "com.hamarb123.macos_input_fixes.MacOSInputFixesMod"
+        ]
+    },
+    "mixins": [
+        "mixins.macos_input_fixes.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=25",
+        "fabric-api": "*"
+    }
+}

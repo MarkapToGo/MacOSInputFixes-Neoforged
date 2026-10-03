@@ -10,9 +10,8 @@
     "KeyboardHandlerAccessor",
     "MouseInvokerMixin",
     "MouseMixin",
-    "MouseHandlerMixin",
+    "MacosUtilMixin",
     "KeyboardMixin",
-    "KeyModifierControlMixin",
     "gui.OptionListWidgetMixin"
   ],
   "injectors": {

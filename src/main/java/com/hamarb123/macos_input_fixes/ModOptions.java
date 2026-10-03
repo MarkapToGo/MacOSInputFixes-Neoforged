@@ -11,11 +11,10 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.base.Splitter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.neoforged.fml.loading.FMLPaths;
+import net.fabricmc.loader.api.FabricLoader;
 
 /**
  * Mod options management - simplified for 1.21.1 only (no multi-version
@@ -124,6 +123,7 @@ public class ModOptions {
                         disableCtrlClickFix,
                         value -> {
                             disableCtrlClickFix = value;
+                            Common.applyCtrlClickEmulation();
                             saveOptions();
                         });
 
@@ -182,11 +182,11 @@ public class ModOptions {
     @SuppressWarnings("null") // Guava Splitter null safety false positives
     public static void loadOptions() {
         // Locate options file in config directory
-        optionsFile = FMLPaths.CONFIGDIR.get().resolve("macos_input_fixes.txt");
+        optionsFile = FabricLoader.getInstance().getConfigDir().resolve("macos_input_fixes.txt");
 
         // Check if we need to migrate from old path
         if (!Files.exists(optionsFile)) {
-            Path oldFile = Minecraft.getInstance().gameDirectory.toPath().resolve("options_macos_input_fixes.txt");
+            Path oldFile = FabricLoader.getInstance().getGameDir().resolve("options_macos_input_fixes.txt");
             if (Files.exists(oldFile)) {
                 try {
                     Files.createDirectories(optionsFile.getParent());
