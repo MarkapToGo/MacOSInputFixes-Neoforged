@@ -12,11 +12,11 @@
       "projectName": "macos-input-fixes",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/clientRunProgramArgs.txt"
+        "@/Volumes/Toshiba (500G)/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/clientRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmacos_input_fixes%%/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
+        "@/Volumes/Toshiba (500G)/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dmacos_input_fixes%%/Volumes/Toshiba (500G)/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
       ],
       "cwd": "${workspaceFolder}/run",
       "env": {},
@@ -34,11 +34,11 @@
       "projectName": "macos-input-fixes",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/serverRunProgramArgs.txt"
+        "@/Volumes/Toshiba (500G)/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/serverRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmacos_input_fixes%%/Users/markap/Desktop/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
+        "@/Volumes/Toshiba (500G)/Development/Minecraft/MacOSInputFixes-Neoforged/build/moddev/serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dmacos_input_fixes%%/Volumes/Toshiba (500G)/Development/Minecraft/MacOSInputFixes-Neoforged/bin/main"
       ],
       "cwd": "${workspaceFolder}/run",
       "env": {},
