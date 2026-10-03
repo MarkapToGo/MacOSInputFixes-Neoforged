@@ -12,6 +12,7 @@
     "MouseMixin",
     "MacosUtilMixin",
     "KeyboardMixin",
+    "InputWithModifiersMixin",
     "gui.OptionListWidgetMixin"
   ],
   "injectors": {

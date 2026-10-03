@@ -6,5 +6,6 @@
     "options.macos_input_fixes.smooth_scroll": "Sanftes Scrollen in Menüs",
     "options.macos_input_fixes.disable_ctrl_click_fix": "Strg+Klick-Fix deaktivieren",
     "options.macos_input_fixes.use_command_key": "Command-Taste verwenden",
+    "options.macos_input_fixes.ctrl_for_text_shortcuts": "Strg für Textkürzel",
     "options.macos_input_fixes.block_command_q": "Command+Q blockieren"
 }
