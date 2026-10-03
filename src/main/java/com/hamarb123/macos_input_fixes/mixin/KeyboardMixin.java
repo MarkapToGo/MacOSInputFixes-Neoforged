@@ -1,7 +1,7 @@
 package com.hamarb123.macos_input_fixes.mixin;
 
 import net.minecraft.client.KeyboardHandler;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,32 +22,32 @@ public class KeyboardMixin {
             return;
         }
         int key = event.key();
-        int scancode = event.scancode();
+        int keycode = event.keycode();
         int modifiers = event.modifiers();
 
         Common.setLastKeyboardModifiers(modifiers);
 
         // Only log special keys to avoid spam (unless drop-modifier debug is on)
-        if (Common.debugDropModifier() && key == 81 && action != 0) {
+        if (Common.debugDropModifier() && key == InputConstants.KEY_Q && action != 0) {
             Minecraft mc = Minecraft.getInstance();
             if (mc != null) {
                 MacOSInputFixesMod.LOGGER.info(
-                        "[MacOSInputFixes][drop] GLFW key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
+                        "[MacOSInputFixes][drop] key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
                         action,
                         Integer.toHexString(modifiers),
                         Common.physicalStrgKeysDown(mc.getWindow()),
                         Common.vanillaStyleHasControlDown(mc.getWindow()));
             }
         }
-        if (key == 256 || key == 258 || key == 81 || (modifiers & GLFW.GLFW_MOD_CONTROL) != 0
-                || (modifiers & GLFW.GLFW_MOD_SUPER) != 0) {
-            MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, scancode={}, action={}, mods={}",
-                    key, scancode, action, modifiers);
+        if (key == InputConstants.KEY_ESCAPE || key == InputConstants.KEY_TAB || key == InputConstants.KEY_Q
+                || (modifiers & InputConstants.MOD_CONTROL) != 0 || (modifiers & InputConstants.MOD_SUPER) != 0) {
+            MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, keycode={}, action={}, mods={}",
+                    key, keycode, action, modifiers);
         }
 
         // Block Command+Q from quitting the game if option is enabled
-        // Key 81 = Q, GLFW_MOD_SUPER = Command key on macOS
-        if (ModOptions.blockCommandQQuit && key == 81 && (modifiers & GLFW.GLFW_MOD_SUPER) != 0) {
+        // MOD_SUPER = Command key on macOS
+        if (ModOptions.blockCommandQQuit && key == InputConstants.KEY_Q && (modifiers & InputConstants.MOD_SUPER) != 0) {
             MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] -> BLOCKED: Command+Q (quit prevention)");
             info.cancel();
             return;
@@ -58,20 +58,20 @@ public class KeyboardMixin {
             return;
         }
 
-        // The native code forwards ALL Tab (258) and Escape (256) key events to Java
-        // So we need to cancel the duplicate GLFW event for these keys
+        // The native code forwards ALL Tab and Escape key events to Java
+        // So we need to cancel the duplicate SDL event for these keys
         // The native event sets allowInputOSX2 = true before calling keyPress
-        if (key == 258 || key == 256) {
+        if (key == InputConstants.KEY_TAB || key == InputConstants.KEY_ESCAPE) {
             if (!Common.allowInputOSX2()) {
-                // This is the GLFW event (duplicate) - cancel it
+                // This is the SDL event (duplicate) - cancel it
                 MacOSInputFixesMod.LOGGER
-                        .info("[KeyboardMixin] -> CANCELLED: Tab/Esc not from native (GLFW duplicate)");
+                        .info("[KeyboardMixin] -> CANCELLED: Tab/Esc not from native (SDL duplicate)");
                 info.cancel();
             } else {
                 // This is the native event - allow it
                 MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] -> ALLOWED: from native callback");
             }
         }
-        // All other keys go through GLFW normally - native code doesn't forward them
+        // All other keys go through SDL normally - native code doesn't forward them
     }
 }

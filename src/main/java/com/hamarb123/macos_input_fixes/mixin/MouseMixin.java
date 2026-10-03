@@ -50,7 +50,7 @@ public class MouseMixin {
     @ModifyVariable(method = "onScroll(JDD)V", at = @At("HEAD"), ordinal = 1, argsOnly = true)
     private double maybeReverseVScroll(double value) {
         double v = ModOptions.reverseScrolling ? -value : value;
-        if (ModOptions.reverseHotbarScrolling && Minecraft.getInstance().screen == null) {
+        if (ModOptions.reverseHotbarScrolling && Minecraft.getInstance().gui.screen() == null) {
             v = -v;
         }
         return v;

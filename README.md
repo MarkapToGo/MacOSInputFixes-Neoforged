@@ -7,7 +7,7 @@ A NeoForge port of [hamarb123's MCMacOSInputFixes](https://github.com/hamarb123/
 | Author | Contribution |
 |--------|--------------|
 | **hamarb123** | Original Fabric mod, native macOS code, core fix implementations |
-| **Markap** | NeoForge 1.21.1 & 26.1.2 ports, simplified codebase for single-version support |
+| **Markap** | NeoForge 1.21.1, 26.1.2 & 26.3 ports, simplified codebase for single-version support |
 
 ## What This Mod Fixes
 
@@ -19,8 +19,8 @@ A NeoForge port of [hamarb123's MCMacOSInputFixes](https://github.com/hamarb123/
 
 ## Requirements
 
-- Minecraft 26.1.2
-- NeoForge 26.1.2+
+- Minecraft 26.3
+- NeoForge 26.3.0.46-beta+
 - macOS (the mod loads safely on other platforms but only applies fixes on macOS)
 
 ## Building
@@ -31,9 +31,9 @@ A NeoForge port of [hamarb123's MCMacOSInputFixes](https://github.com/hamarb123/
 
 This mod uses **native macOS code** (Objective-C++) to intercept and fix input events at the operating system level. The native library (`macos_input_fixes.dylib`) hooks into macOS's Cocoa framework to:
 
-1. **Intercept scroll events** before they reach GLFW/Minecraft, allowing us to normalize trackpad sensitivity and filter momentum scrolling
+1. **Intercept scroll events** before they reach SDL/Minecraft, allowing us to normalize trackpad sensitivity and filter momentum scrolling
 2. **Detect Control key state** separately from Command key, since macOS treats Ctrl+Click as right-click by default
-3. **Capture special key combinations** (Ctrl+Tab, Ctrl+Escape) that GLFW doesn't properly detect on macOS
+3. **Capture special key combinations** (Ctrl+Tab, Ctrl+Escape) at the Cocoa level, before the windowing library (SDL since Minecraft 26.3) sees them
 
 This native code must be compiled with Apple's Clang compiler, which is only available through XCode or its command line tools.
 
@@ -58,7 +58,7 @@ This creates a universal binary supporting both Intel (x86_64) and Apple Silicon
 ./gradlew build
 ```
 
-Output: `build/libs/macos_input_fixes-1.0.0.jar`
+Output: `build/libs/macos_input_fixes-<yy.MM.dd>.jar` (the version is the build date)
 
 ## Testing
 

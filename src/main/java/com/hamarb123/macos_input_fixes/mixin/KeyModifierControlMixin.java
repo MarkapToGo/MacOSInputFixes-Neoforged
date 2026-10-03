@@ -1,8 +1,8 @@
 package com.hamarb123.macos_input_fixes.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.settings.IKeyConflictContext;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,9 +43,8 @@ public class KeyModifierControlMixin {
         if (mc == null) {
             return;
         }
-        long window = mc.getWindow().handle();
-        boolean commandHeld = GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SUPER) == GLFW.GLFW_PRESS
-                || GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_SUPER) == GLFW.GLFW_PRESS;
+        boolean commandHeld = InputConstants.isKeyDown(InputConstants.KEY_LGUI)
+                || InputConstants.isKeyDown(InputConstants.KEY_RGUI);
         if (!macosInputFixes$loggedKeyModifierOnce) {
             macosInputFixes$loggedKeyModifierOnce = true;
             MacOSInputFixesMod.LOGGER.info(

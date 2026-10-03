@@ -124,6 +124,7 @@ public class ModOptions {
                         disableCtrlClickFix,
                         value -> {
                             disableCtrlClickFix = value;
+                            Common.applyCtrlClickEmulation();
                             saveOptions();
                         });
 

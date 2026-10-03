@@ -51,7 +51,7 @@ jobs:
           version-type: release
           
           loaders: neoforge
-          game-versions: 26.1.2
+          game-versions: 26.3
           
           changelog: ${{ github.event.release.body }}
           
