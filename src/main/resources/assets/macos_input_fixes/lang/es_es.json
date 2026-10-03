@@ -6,5 +6,6 @@
     "options.macos_input_fixes.smooth_scroll": "Desplazamiento Suave en Menús",
     "options.macos_input_fixes.disable_ctrl_click_fix": "Desactivar Fix de Ctrl+Clic",
     "options.macos_input_fixes.use_command_key": "Usar Tecla Command",
+    "options.macos_input_fixes.ctrl_for_text_shortcuts": "Ctrl para Atajos de Texto",
     "options.macos_input_fixes.block_command_q": "Bloquear Command+Q"
 }

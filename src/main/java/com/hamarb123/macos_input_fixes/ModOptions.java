@@ -33,6 +33,7 @@ public class ModOptions {
     public static boolean interfaceSmoothScroll = false;
     public static boolean disableCtrlClickFix = false;
     public static boolean useCommandKey = false; // false = use Ctrl (STRG), true = use Command (⌘)
+    public static boolean ctrlForTextShortcuts = false; // false = Command (⌘) + C/V/X/A like other Mac apps, true = Ctrl
     public static boolean blockCommandQQuit = true; // true = block Command+Q from quitting game
 
     // Option UI instances
@@ -43,6 +44,7 @@ public class ModOptions {
     public static OptionInstance<Boolean> INTERFACE_SMOOTH_SCROLL;
     public static OptionInstance<Boolean> DISABLE_CTRL_CLICK_FIX;
     public static OptionInstance<Boolean> USE_COMMAND_KEY;
+    public static OptionInstance<Boolean> CTRL_FOR_TEXT_SHORTCUTS;
     public static OptionInstance<Boolean> BLOCK_COMMAND_Q_QUIT;
 
     private static boolean loadedInterface = false;
@@ -62,6 +64,7 @@ public class ModOptions {
                     INTERFACE_SMOOTH_SCROLL,
                     DISABLE_CTRL_CLICK_FIX,
                     USE_COMMAND_KEY,
+                    CTRL_FOR_TEXT_SHORTCUTS,
                     BLOCK_COMMAND_Q_QUIT
             };
         } else {
@@ -132,10 +135,25 @@ public class ModOptions {
                         OptionInstance.cachedConstantTooltip(Component.literal(
                                 "Choose which key to use as the modifier for drop stack/Ctrl+Click.\n" +
                                         "OFF = Use Ctrl key (STRG on German keyboards)\n" +
-                                        "ON = Use Command key (⌘)")),
+                                        "ON = Use Command key (⌘)\n" +
+                                        "Copy/paste in chat is set separately (Ctrl for Text Shortcuts).")),
                         useCommandKey,
                         value -> {
                             useCommandKey = value;
+                            saveOptions();
+                        });
+
+                CTRL_FOR_TEXT_SHORTCUTS = OptionInstance.createBoolean(
+                        "options.macos_input_fixes.ctrl_for_text_shortcuts",
+                        OptionInstance.cachedConstantTooltip(Component.literal(
+                                "Which key works with C, V, X and A to copy, paste, cut and\n" +
+                                        "select all in chat and other text fields.\n" +
+                                        "OFF (default) = Command (⌘), like other Mac apps\n" +
+                                        "ON = Ctrl (STRG on German keyboards)\n" +
+                                        "Does not change the drop stack key (Use Command Key).")),
+                        ctrlForTextShortcuts,
+                        value -> {
+                            ctrlForTextShortcuts = value;
                             saveOptions();
                         });
 
@@ -238,6 +256,9 @@ public class ModOptions {
             if (compoundTag.contains("useCommandKey")) {
                 useCommandKey = Boolean.parseBoolean(compoundTag.getString("useCommandKey").orElse("false"));
             }
+            if (compoundTag.contains("ctrlForTextShortcuts")) {
+                ctrlForTextShortcuts = Boolean.parseBoolean(compoundTag.getString("ctrlForTextShortcuts").orElse("false"));
+            }
             if (compoundTag.contains("blockCommandQQuit")) {
                 blockCommandQQuit = Boolean.parseBoolean(compoundTag.getString("blockCommandQQuit").orElse("true"));
             }
@@ -258,6 +279,7 @@ public class ModOptions {
             printWriter.println("interfaceSmoothScroll:" + interfaceSmoothScroll);
             printWriter.println("disableCtrlClickFix:" + disableCtrlClickFix);
             printWriter.println("useCommandKey:" + useCommandKey);
+            printWriter.println("ctrlForTextShortcuts:" + ctrlForTextShortcuts);
             printWriter.println("blockCommandQQuit:" + blockCommandQQuit);
         } catch (Exception ex2) {
             ex2.printStackTrace(System.err);

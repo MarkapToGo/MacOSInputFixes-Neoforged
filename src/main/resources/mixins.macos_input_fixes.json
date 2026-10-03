@@ -12,6 +12,7 @@
     "MouseMixin",
     "MouseHandlerMixin",
     "KeyboardMixin",
+    "InputWithModifiersMixin",
     "KeyModifierControlMixin",
     "gui.OptionListWidgetMixin"
   ],
