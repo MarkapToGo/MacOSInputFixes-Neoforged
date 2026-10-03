@@ -18,12 +18,15 @@ public class Common {
      */
     private static volatile int lastKeyboardModifiers;
 
+    private static final boolean DEBUG_INPUT = Boolean.getBoolean("macosInputFixes.debugDropModifier");
+
     /**
-     * Log extra detail for Ctrl/Strg + drop (hotbar and inventory). Enable with
-     * {@code -DmacosInputFixes.debugDropModifier=true}.
+     * Log every key / scroll event the mod sees, plus extra detail for Ctrl/Strg + drop (hotbar and
+     * inventory). Off by default: it would spam the log and record which shortcuts a player uses.
+     * Enable with {@code -DmacosInputFixes.debugDropModifier=true}.
      */
     public static boolean debugDropModifier() {
-        return Boolean.getBoolean("macosInputFixes.debugDropModifier");
+        return DEBUG_INPUT;
     }
 
     public static void setLastKeyboardModifiers(int modifiers) {

@@ -27,28 +27,32 @@ public class KeyboardMixin {
 
         Common.setLastKeyboardModifiers(modifiers);
 
-        // Only log special keys to avoid spam (unless drop-modifier debug is on)
-        if (Common.debugDropModifier() && key == 81 && action != 0) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc != null) {
-                MacOSInputFixesMod.LOGGER.info(
-                        "[MacOSInputFixes][drop] GLFW key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
-                        action,
-                        Integer.toHexString(modifiers),
-                        Common.physicalStrgKeysDown(mc.getWindow()),
-                        Common.vanillaStyleHasControlDown(mc.getWindow()));
+        // Key events are only logged with -DmacosInputFixes.debugDropModifier=true (privacy and log spam)
+        if (Common.debugDropModifier()) {
+            if (key == 81 && action != GLFW.GLFW_RELEASE) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc != null) {
+                    MacOSInputFixesMod.LOGGER.info(
+                            "[MacOSInputFixes][drop] GLFW key Q: action={} mods=0x{} | physicalStrg={} | Screen.hasControlDown()={}",
+                            action,
+                            Integer.toHexString(modifiers),
+                            Common.physicalStrgKeysDown(mc.getWindow()),
+                            Common.vanillaStyleHasControlDown(mc.getWindow()));
+                }
             }
-        }
-        if (key == 256 || key == 258 || key == 81 || (modifiers & GLFW.GLFW_MOD_CONTROL) != 0
-                || (modifiers & GLFW.GLFW_MOD_SUPER) != 0) {
-            MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, scancode={}, action={}, mods={}",
-                    key, scancode, action, modifiers);
+            if (key == 256 || key == 258 || key == 81 || (modifiers & GLFW.GLFW_MOD_CONTROL) != 0
+                    || (modifiers & GLFW.GLFW_MOD_SUPER) != 0) {
+                MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] KEY: key={}, scancode={}, action={}, mods={}",
+                        key, scancode, action, modifiers);
+            }
         }
 
         // Block Command+Q from quitting the game if option is enabled
         // Key 81 = Q, GLFW_MOD_SUPER = Command key on macOS
         if (ModOptions.blockCommandQQuit && key == 81 && (modifiers & GLFW.GLFW_MOD_SUPER) != 0) {
-            MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] -> BLOCKED: Command+Q (quit prevention)");
+            if (action == GLFW.GLFW_PRESS) {
+                MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] Blocked Command+Q (quit prevention)");
+            }
             info.cancel();
             return;
         }
@@ -64,10 +68,12 @@ public class KeyboardMixin {
         if (key == 258 || key == 256) {
             if (!Common.allowInputOSX2()) {
                 // This is the GLFW event (duplicate) - cancel it
-                MacOSInputFixesMod.LOGGER
-                        .info("[KeyboardMixin] -> CANCELLED: Tab/Esc not from native (GLFW duplicate)");
+                if (Common.debugDropModifier()) {
+                    MacOSInputFixesMod.LOGGER
+                            .info("[KeyboardMixin] -> CANCELLED: Tab/Esc not from native (GLFW duplicate)");
+                }
                 info.cancel();
-            } else {
+            } else if (Common.debugDropModifier()) {
                 // This is the native event - allow it
                 MacOSInputFixesMod.LOGGER.info("[KeyboardMixin] -> ALLOWED: from native callback");
             }

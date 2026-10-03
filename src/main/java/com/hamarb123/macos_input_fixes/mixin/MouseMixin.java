@@ -17,29 +17,21 @@ public class MouseMixin {
 
     @Inject(at = @At("HEAD"), method = "onScroll(JDD)V", cancellable = true)
     private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo info) {
-        MacOSInputFixesMod.LOGGER.info(
-                "[MouseMixin] SCROLL: h={}, v={}, isMac={}, nativeRegistered={}, allowInputOSX={}",
-                horizontal, vertical, Common.IS_SYSTEM_MAC, Common.areNativeCallbacksRegistered(),
-                Common.allowInputOSX());
+        // Fires for every scroll step, so only log with -DmacosInputFixes.debugDropModifier=true
+        if (Common.debugDropModifier()) {
+            MacOSInputFixesMod.LOGGER.info(
+                    "[MouseMixin] SCROLL: h={}, v={}, isMac={}, nativeRegistered={}, allowInputOSX={}",
+                    horizontal, vertical, Common.IS_SYSTEM_MAC, Common.areNativeCallbacksRegistered(),
+                    Common.allowInputOSX());
+        }
 
         if (Common.IS_SYSTEM_MAC && Common.areNativeCallbacksRegistered()) {
-            // Native callbacks are working - only allow scroll events from our native
-            // callback
-            if (vertical == 0 && horizontal == 0) {
-                MacOSInputFixesMod.LOGGER.info("[MouseMixin] -> CANCELLED: both h and v are 0");
+            // Native callbacks are working - only allow non-zero scroll events from our native callback
+            if ((vertical == 0 && horizontal == 0) || !Common.allowInputOSX()) {
                 info.cancel();
-                return;
             }
-            if (!Common.allowInputOSX()) {
-                MacOSInputFixesMod.LOGGER.info("[MouseMixin] -> CANCELLED: not from native callback");
-                info.cancel();
-                return;
-            }
-            MacOSInputFixesMod.LOGGER.info("[MouseMixin] -> ALLOWED: from native callback");
-        } else {
-            // Native callbacks not registered or not macOS - pass through all scroll events
-            MacOSInputFixesMod.LOGGER.info("[MouseMixin] -> ALLOWED: native callbacks not active, passing through");
         }
+        // Native callbacks not registered or not macOS - pass through all scroll events
     }
 
     @ModifyVariable(method = "onScroll(JDD)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)

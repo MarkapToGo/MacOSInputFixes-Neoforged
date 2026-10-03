@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.hamarb123.macos_input_fixes.Common;
 import com.hamarb123.macos_input_fixes.MacOSInputFixesMod;
 import com.hamarb123.macos_input_fixes.ModOptions;
 
@@ -22,7 +23,10 @@ public class OptionListWidgetMixin {
      */
     @Inject(at = @At("RETURN"), method = "addSmall([Lnet/minecraft/client/OptionInstance;)V")
     private void afterAddSmall(OptionInstance<?>[] options, CallbackInfo info) {
-        MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] addSmall called with {} options", options.length);
+        boolean debug = Common.debugDropModifier();
+        if (debug) {
+            MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] addSmall called with {} options", options.length);
+        }
 
         // Check if these are mouse options - use option caption text
         boolean isMouseOptions = false;
@@ -30,7 +34,9 @@ public class OptionListWidgetMixin {
             try {
                 // Get the caption (translated text) of the option
                 String caption = option.toString();
-                MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] Option: {}", caption);
+                if (debug) {
+                    MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] Option: {}", caption);
+                }
 
                 // Check for mouse sensitivity option by the text content
                 if (caption.contains("sensitivity") || caption.contains("Sensitivity")) {
@@ -51,11 +57,12 @@ public class OptionListWidgetMixin {
         }
 
         if (isMouseOptions && !modOptionsAdded) {
-            MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] Found mouse options, adding mod options");
             // Add our mod options
             OptionsList self = (OptionsList) (Object) this;
             OptionInstance<?>[] modOptions = ModOptions.getModOptions();
-            MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] Adding {} mod options", modOptions.length);
+            if (debug) {
+                MacOSInputFixesMod.LOGGER.info("[OptionListWidgetMixin] Found mouse options, adding {} mod options", modOptions.length);
+            }
             if (modOptions.length > 0) {
                 modOptionsAdded = true;
                 self.addSmall(modOptions);
