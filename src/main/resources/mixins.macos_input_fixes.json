@@ -14,7 +14,7 @@
     "KeyboardMixin",
     "InputWithModifiersMixin",
     "KeyModifierControlMixin",
-    "gui.OptionListWidgetMixin"
+    "gui.MouseSettingsScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
